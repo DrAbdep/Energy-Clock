@@ -1,0 +1,40 @@
+esphome:
+  name: my_esp32
+  platform: ESP32
+  board: esp32dev
+
+wifi:
+  ssid: "your_SSID"
+  password: "your_PASSWORD"
+
+api:
+  password: "your_API_PASSWORD"
+
+ota:
+  password: "your_OTA_PASSWORD"
+
+http_request:
+  url: "http://your_HOME_ASSISTANT_IP_ADDRESS:8123/api/states/sensor.power_bank_time_remaining"
+  method: "GET"
+  headers:
+    Authorization: "Bearer your_HOME_ASSISTANT_ACCESS_TOKEN"
+
+output:
+  - platform: esp8266_pwm
+    pin: 5
+    frequency: 1000 Hz
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    dimension: "128x64"
+
+sensor:
+  - platform: wifi_signal
+    name: "Wi-Fi Signal Strength"
+    update_interval: 60s
+  - platform: homeassistant
+    entity_id: sensor.power_bank_time_remaining
+    name: "Power Bank Time Remaining"
+    id: power_bank_time_remaining
