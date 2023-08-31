@@ -1,0 +1,38 @@
+sensor:
+  - platform: template
+    sensors:
+      power_bank_time_remaining:
+        friendly_name: "Power Bank Time Remaining"
+        value_template: >-
+          {% set power_bank_capacity = states('sensor.power_bank_capacity') | float %}
+          {% set power_bank_usage = states('sensor.power_bank_usage') | float %}
+          {% set time_remaining = (power_bank_capacity / power_bank_usage) * 60 %}
+          {% set hours_remaining = ((time_remaining / 60) | int) %}
+          {% set minutes_remaining = ((time_remaining % 60) | int) %}
+          {% if power_bank_usage == 0 %}
+            Unknown
+          {% else %}
+            {{ '%02d:%02d' | format(hours_remaining, minutes_remaining) }}
+          {% endif %}
+        entity_picture_template: >-
+          {% set time_remaining = states('sensor.power_bank_time_remaining') %}
+          {% if time_remaining == 'Unknown' %}
+            /local/unknown.png
+          {% elif time_remaining <= '01:00' %}
+            /local/onehour.png
+          {% elif time_remaining <= '02:00' %}
+            /local/twohours.png
+          {% else %}
+            /local/morethan2hours.png
+          {% endif %}
+
+######################################################################################
+####################### POWER BANK ###################################################
+
+sensor:
+  - platform: template
+    sensors:
+      power_bank_usage:
+        friendly_name: "Power Bank Usage"
+        unit_of_measurement: "W"
+        value_template: "{{ states('sensor.power_bank_entity') | float }}"
